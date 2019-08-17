@@ -544,6 +544,7 @@
 			var menuItem,
 				itemName = $( '#custom-menu-item-name' ),
 				itemUrl = $( '#custom-menu-item-url' ),
+				itemUrlVal,
 				urlRegex;
 
 			if ( ! this.currentMenuControl ) {
@@ -564,17 +565,19 @@
 			 */
 			urlRegex = /^((\w+:)?\/\/\w.*|\w+:(?!\/\/$)|\/|\?|#)/;
 
+			itemUrlVal = itemUrl.val().trim();
+
 			if ( '' === itemName.val() ) {
 				itemName.addClass( 'invalid' );
 				return;
-			} else if ( ! urlRegex.test( itemUrl.val() ) ) {
+			} else if ( ! urlRegex.test( itemUrlVal ) ) {
 				itemUrl.addClass( 'invalid' );
 				return;
 			}
 
 			menuItem = {
 				'title': itemName.val(),
-				'url': itemUrl.val(),
+				'url': itemUrlVal,
 				'type': 'custom',
 				'type_label': api.Menus.data.l10n.custom_label,
 				'object': 'custom'
