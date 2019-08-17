@@ -549,7 +549,17 @@ function add_option( $option, $value = '', $deprecated = '', $autoload = 'yes' )
 function delete_option( $option ) {
 	global $wpdb;
 
-	$option = trim( $option );
+	/**
+	 * Filters the option name before the option it gets deleted.
+	 * 
+	 * Returning an empty string short circuits the function.
+	 * 
+	 * @since 5.3.0
+	 * 
+	 * @param string $option Option name.
+	 */
+	$option = trim( apply_filters( 'pre_delete_option', $option ) );
+
 	if ( empty( $option ) ) {
 		return false;
 	}

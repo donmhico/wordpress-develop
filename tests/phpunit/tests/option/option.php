@@ -140,4 +140,46 @@ class Tests_Option_Option extends WP_UnitTestCase {
 		$actual = $wpdb->get_row( $wpdb->prepare( "SELECT autoload FROM $wpdb->options WHERE option_name = %s LIMIT 1", $name ) );
 		$this->assertEquals( $expected, $actual->autoload );
 	}
+
+	function pre_delete_option_filter( $option ) {
+		var_dump( 'pre_delete_option_filter' );
+		return $option;
+	}
+
+	/**
+	 * @ticket 44042
+	 */
+	function test_pre_delete_option_filter() {
+		add_filter( 'pre_delete_option', function( $option ) {
+			if ( 'test_option_test' === $option ) {
+				$option = 'test_option';
+			}
+			
+			return $option;
+		} );
+
+		add_option( 'test_option', '1' );
+		delete_option( 'test_option_test' );
+
+		$this->assertEquals( false, get_option( 'test_option' ) );
+
+	}
+
+	/**
+	 * Returning an empty string in `pre_delete_option` short circuits `delete_option()`.
+	 * 
+	 * @ticket 44042
+	 */
+	function test_pre_delete_option_short_circuit() {
+		add_filter( 'pre_delete_option', function( $option ) {
+			if ( 'test_option' === $option ) {
+				return '';
+			}
+		} );
+
+		add_option( 'test_option', '5' );
+		delete_option( 'test_option' );
+
+		$this->assertEquals( '5', get_option( 'test_option' ) );
+	}
 }
