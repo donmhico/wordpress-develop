@@ -141,11 +141,6 @@ class Tests_Option_Option extends WP_UnitTestCase {
 		$this->assertEquals( $expected, $actual->autoload );
 	}
 
-	function pre_delete_option_filter( $option ) {
-		var_dump( 'pre_delete_option_filter' );
-		return $option;
-	}
-
 	/**
 	 * @ticket 44042
 	 */
