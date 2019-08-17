@@ -550,7 +550,7 @@ function delete_option( $option ) {
 	global $wpdb;
 
 	/**
-	 * Filters the option name before the option it gets deleted.
+	 * Filters the option name before the option gets deleted.
 	 * 
 	 * Returning an empty string short circuits the function.
 	 * 
