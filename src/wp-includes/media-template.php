@@ -1392,7 +1392,7 @@ function wp_print_media_templates() {
 
 	<?php // Template for the Site Icon preview, used for example in the Customizer. ?>
 	<script type="text/html" id="tmpl-site-icon-preview">
-		<h2><?php _e( 'Preview Mico' ); ?></h2>
+		<h2><?php _e( 'Preview' ); ?></h2>
 		<strong aria-hidden="true"><?php _e( 'As a browser icon' ); ?></strong>
 		<div class="favicon-preview">
 			<img src="<?php echo esc_url( admin_url( 'images/' . ( is_rtl() ? 'browser-rtl.png' : 'browser.png' ) ) ); ?>" class="browser-preview" width="182" height="" alt="" />
