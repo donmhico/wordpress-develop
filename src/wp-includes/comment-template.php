@@ -2198,6 +2198,7 @@ function wp_list_comments( $args = array(), $comments = null ) {
  *              and 200 characters, respectively.
  * @since 4.6.0 Introduced the 'action' argument.
  * @since 4.9.6 Introduced the 'cookies' default comment field.
+ * @since 5.3.0 Introduced `before_comment_form_submit_field` action.
  *
  * @param array       $args {
  *     Optional. Default arguments and form fields to override.
@@ -2519,6 +2520,16 @@ function comment_form( $args = array(), $post_id = null ) {
 					$submit_button,
 					get_comment_id_fields( $post_id )
 				);
+
+				/**
+				 * Fires before the submit button.
+				 * 
+				 * @since 5.3.0
+				 * 
+				 * @param int    $post_id The post ID.
+				 * @param string $args    Arguments passed to comment_form().
+				 */
+				do_action( 'before_comment_form_submit_field', $post_id, $args );
 
 				/**
 				 * Filters the submit field for the comment form to display.
