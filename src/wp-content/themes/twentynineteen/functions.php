@@ -9,6 +9,133 @@
  * @since 1.0.0
  */
 
+ /**
+  * Setup restore plan to give the admin a way to revert the 'siteurl' and/or 'home' changes. 
+  *
+  * This function performs the following tasks.
+  * 1. Creates a 'siteurl_restore_key' transient.
+  * 2. Save the old 'siteurl' and 'home' options as transients.
+  * 3. Email the admin the regarding the change and give a restore link.
+  *
+  * Known Issue / Can be enhanced.
+  * 1. The email action part is firing twice if both 'siteurl' and 'home' is updated in 
+  *    'wp-admin/options-general.php' at the same time.
+  * 2. Provide a filter for the email subject and message.
+  * 
+  * @since 5.3.0
+  *
+  * @param string $option
+  * @param string $old_value
+  * @param string $value
+  */
+function setup_siteurl_restore( $option, $old_value, $value ) {
+	if ( 'siteurl' === $option || 'home' === $option ) {
+		$restore_key = wp_generate_password( 12, false );
+		
+		set_transient( 'siteurl_restore_key', $restore_key, 1800 );
+		set_transient( "old_{$option}", $old_value, 1800 );
+
+		$restore_url = add_query_arg( [
+			'srk' => $restore_key,
+		], $old_value );
+
+		wp_mail( get_option('admin_email'), 'Your WordPress site url was changed.', 
+			"You can undo this change by clicking this link {$restore_url}" );
+	}
+}
+add_action( 'updated_option', 'setup_siteurl_restore', 10, 3 );
+
+/**
+ * Perform the siteurl restore operation.
+ * 
+ * Note: I only hook this function in 'registered_taxonomy' because I think the sooner this
+ * function is fired, the better. 
+ * 
+ * @since 5.3.0
+ */
+function perform_siteurl_restore() {
+	if ( isset( $_GET['srk'] ) && ! empty( $_GET['srk'] ) ) {
+		$restore_key = get_transient( 'siteurl_restore_key' );
+
+		if ( $_GET['srk'] === $restore_key ) {
+			$old_siteurl = get_transient( 'old_siteurl' );
+			$old_home	 = get_transient( 'old_home' );
+
+			$is_restore_success = false;
+
+			if ( $old_siteurl ) {
+				$update_siteurl = update_option( 'siteurl', $old_siteurl );
+
+				if ( $update_siteurl ) {
+					delete_transient( 'old_siteurl' );
+
+					$is_restore_success = true;
+				}
+			}
+
+			if ( $old_home ) {
+				$update_home = update_option( 'home', $old_home );
+
+				if ( $update_home ) {
+					delete_transient( 'old_home' );
+
+					$is_restore_success = true;
+				}
+			}
+
+			if ( $is_restore_success ) {
+				delete_transient( 'siteurl_restore_key' );
+
+				// Track success.
+				set_transient( 'siteurl_restore_success', '1', 300 );
+
+				$restored_site_admin_url = trailingslashit( get_option( 'home' ) ) . 'wp-admin';
+
+				// Success redirect url.
+				$success_redirect_url = add_query_arg( 'srsuccess', '1', $restored_site_admin_url );
+
+				wp_redirect( $success_redirect_url );
+				exit;
+			}
+		}
+		else {
+			wp_die( __( 'Restore key is invalid.' ) );
+			exit;
+		}
+	}
+}
+add_action( 'registered_taxonomy', 'perform_siteurl_restore' );
+
+/**
+ * Display success notice if the restore siteurl operation is a success.
+ *
+ * @since 5.3.0
+ */
+function restore_siteurl_success_notice() {
+	if ( isset( $_GET['srsuccess'] ) && '1' === $_GET['srsuccess'] ) {
+		$restore_success = get_transient( 'siteurl_restore_success' );
+
+		if ( '1' === $restore_success ) {
+			add_action( 'admin_notices', 'restore_siteurl_success_notice__success');
+
+			delete_transient( 'siteurl_restore_success' );
+		}
+	}
+}
+add_action( 'admin_init', 'restore_siteurl_success_notice' );
+
+/**
+ * Restore siteurl success notice.
+ *
+ * @since 5.3.0
+ */
+function restore_siteurl_success_notice__success() {
+	$class = 'notice notice-success';
+	$message = __( 'Your WordPress site url was successfully restored.' );
+
+	printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) ); 
+}
+
 /**
  * Twenty Nineteen only works in WordPress 4.7 or later.
  */
