@@ -7316,3 +7316,20 @@ function is_wp_version_compatible( $required ) {
 function is_php_version_compatible( $required ) {
 	return empty( $required ) || version_compare( phpversion(), $required, '>=' );
 }
+
+/**
+ * Access the WP Restore Siteurl instance.
+ *
+ * @since 5.3.0
+ *
+ * @return WP_Restore_Siteurl
+ */
+function wp_restore_siteurl() {
+	static $wp_restore_siteurl;
+
+	if ( ! $wp_restore_siteurl ) {
+		$wp_restore_siteurl = new WP_Restore_Siteurl();
+	}
+
+	return $wp_restore_siteurl;
+}

@@ -151,6 +151,7 @@ require_once( ABSPATH . WPINC . '/class-wp-locale-switcher.php' );
 wp_not_installed();
 
 // Load most of WordPress.
+require( ABSPATH . WPINC . '/class-wp-restore-siteurl.php' );
 require( ABSPATH . WPINC . '/class-wp-walker.php' );
 require( ABSPATH . WPINC . '/class-wp-ajax-response.php' );
 require( ABSPATH . WPINC . '/capabilities.php' );
@@ -269,6 +270,9 @@ require( ABSPATH . WPINC . '/blocks/rss.php' );
 require( ABSPATH . WPINC . '/blocks/search.php' );
 require( ABSPATH . WPINC . '/blocks/shortcode.php' );
 require( ABSPATH . WPINC . '/blocks/tag-cloud.php' );
+
+// Load the WP Restore Siteurl instance.
+wp_restore_siteurl();
 
 $GLOBALS['wp_embed'] = new WP_Embed();
 
