@@ -259,7 +259,7 @@ class WP_Restore_Siteurl {
             $restore_success = get_transient( 'siteurl_restore_success' );
 
             if ( '1' === $restore_success ) {
-                add_action( 'admin_notices', 'restore_siteurl_success_notice__success');
+                add_action( 'admin_notices', [ $this, 'restore_siteurl_success_notice__success' ] );
 
                 delete_transient( 'siteurl_restore_success' );
             }
