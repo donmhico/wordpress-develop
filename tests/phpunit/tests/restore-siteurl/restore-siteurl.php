@@ -129,7 +129,7 @@ class Tests_Restore_Siteurl extends WP_UnitTestCase {
         $_GET['srsuccess'] = '1';
         $wp_restore_siteurl->restore_siteurl_success_notice();
 
-        $is_success_notice_hooked = has_action( 'admin_notices', 'restore_siteurl_success_notice__success' );
+        $is_success_notice_hooked = has_action( 'admin_notices', [ $wp_restore_siteurl, 'restore_siteurl_success_notice__success'] );
 
         $this->assertEquals( 10, $is_success_notice_hooked );
 
