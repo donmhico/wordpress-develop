@@ -271,9 +271,6 @@ require( ABSPATH . WPINC . '/blocks/search.php' );
 require( ABSPATH . WPINC . '/blocks/shortcode.php' );
 require( ABSPATH . WPINC . '/blocks/tag-cloud.php' );
 
-// Load the WP Restore Siteurl instance.
-wp_restore_siteurl();
-
 $GLOBALS['wp_embed'] = new WP_Embed();
 
 // Load multisite-specific files.
@@ -376,6 +373,9 @@ unset( $plugin );
 // Load pluggable functions.
 require( ABSPATH . WPINC . '/pluggable.php' );
 require( ABSPATH . WPINC . '/pluggable-deprecated.php' );
+
+// Load the WP Restore Siteurl instance.
+wp_restore_siteurl();
 
 // Set internal encoding.
 wp_set_internal_encoding();

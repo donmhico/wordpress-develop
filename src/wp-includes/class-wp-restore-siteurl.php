@@ -88,13 +88,18 @@ class WP_Restore_Siteurl {
                 $this->old_home = $old_value;
             }
 
-            // Create a restore key transient.
-            $restore_key_transient = set_transient( 'siteurl_restore_key', $this->generate_restore_key(), self::RESTORE_TRANSIENTS_EXPIRY_IN_SECONDS );
+            $restore_key_transient = get_transient( 'siteurl_restore_key' );
+            $set_restore_key_transient = false;
+            if ( $this->generate_restore_key() != $restore_key_transient ) {
+                // Create a restore key transient.
+                $set_restore_key_transient = set_transient( 'siteurl_restore_key', $this->generate_restore_key(), self::RESTORE_TRANSIENTS_EXPIRY_IN_SECONDS );
+            }
 
             // Keep a backup of the old `siteurl` and `home`.
-            $backup_transient = set_transient( "old_{$option}", $old_value, self::RESTORE_TRANSIENTS_EXPIRY_IN_SECONDS );
+            delete_transient( "old_{$option}" );
+            $set_backup_transient = set_transient( "old_{$option}", $old_value, self::RESTORE_TRANSIENTS_EXPIRY_IN_SECONDS );
             
-            if ( $restore_key_transient && $backup_transient ) {
+            if ( $set_restore_key_transient && $set_backup_transient ) {
                 $this->send_restore_link_email_to_admin();
             }
         }
