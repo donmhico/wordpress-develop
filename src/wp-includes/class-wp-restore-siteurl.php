@@ -91,7 +91,7 @@ class WP_Restore_Siteurl {
 
             // Backup the old 'home' option value.
             if ( 'home' === $option ) {
-                $this->old_home = $old_value;
+                $this->old_home_value = $old_value;
             }
 
             $restore_key_transient = get_transient( 'siteurl_restore_key' );
@@ -166,18 +166,23 @@ class WP_Restore_Siteurl {
     /**
      * Get the old 'home' option value. 
      * 
-     * If `$this->old_home` is null then the 'home' option wasn't updated.
-     * Get the 'home' value from options table if it's not backed up.
-     * 
      * @since 5.3.0
      *
-     * @return string $old_home_value Old 'home' option value.
+     * @return string $old_home_value Old 'home' value.
      */
     public function get_old_home_value() {
-        if ( null === $this->old_home_value ) {
-            $this->old_home_value = get_option( 'home' );
+        if ( null !== $this->old_home_value ) {
+            return esc_url( $this->old_home_value );
         }
 
+        $old_home_transient = get_transient( 'old_home' );
+        if ( $old_home_transient !== false ) {
+            $this->old_home_value = $old_home_transient;
+        }
+        else {
+            $this->old_home_value = get_option( 'home' );
+        }
+       
         return esc_url( $this->old_home_value );
     }
 
