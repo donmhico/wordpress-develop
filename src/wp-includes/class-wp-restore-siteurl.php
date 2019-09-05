@@ -83,6 +83,12 @@ class WP_Restore_Siteurl {
      */
     public function setup_siteurl_restore( $option, $old_value, $value ) {
         if ( 'siteurl' === $option || 'home' === $option ) {
+            // Prevent Restore Siteurl protocol if the update is the restoration.
+            $backup_value = get_transient( "old_{$option}" );
+            if ( $value === $backup_value ) {
+                return;
+            }
+
             // Backup the old 'home' option value.
             if ( 'home' === $option ) {
                 $this->old_home = $old_value;
