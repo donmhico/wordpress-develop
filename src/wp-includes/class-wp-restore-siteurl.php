@@ -9,14 +9,6 @@
  */
 class WP_Restore_Siteurl {
     /**
-     * Expiry time of the created transients for Restore Siteurl.
-     * 
-     * @since 5.3.0
-     * @var string
-     */
-    const RESTORE_TRANSIENTS_EXPIRY_IN_SECONDS = 1800;
-
-    /**
      * Restore key to authenticate the restore siteurl request.
      *
      * @since 5.3.0
@@ -94,16 +86,26 @@ class WP_Restore_Siteurl {
                 $this->old_home_value = $old_value;
             }
 
+            $default_expiry_time = 30 * MINUTE_IN_SECONDS;
+            /**
+             * Filters the expiry time of the restore siteurl link.
+             *
+             * @since 5.3.0
+             *
+             * @param string $expiry_time Expiry time of the restore siteurl link.
+             */
+            $expiry_time = apply_filters( 'restore_siteurl_expiry_time', $default_expiry_time );
+
             $restore_key_transient = get_transient( 'siteurl_restore_key' );
             $set_restore_key_transient = false;
             if ( $this->generate_restore_key() != $restore_key_transient ) {
                 // Create a restore key transient.
-                $set_restore_key_transient = set_transient( 'siteurl_restore_key', $this->generate_restore_key(), self::RESTORE_TRANSIENTS_EXPIRY_IN_SECONDS );
+                $set_restore_key_transient = set_transient( 'siteurl_restore_key', $this->generate_restore_key(), $expiry_time );
             }
 
             // Keep a backup of the old `siteurl` and `home`.
             delete_transient( "old_{$option}" );
-            $set_backup_transient = set_transient( "old_{$option}", $old_value, self::RESTORE_TRANSIENTS_EXPIRY_IN_SECONDS );
+            $set_backup_transient = set_transient( "old_{$option}", $old_value, $expiry_time );
             
             if ( $set_restore_key_transient && $set_backup_transient ) {
                 $this->send_restore_link_email_to_admin();
