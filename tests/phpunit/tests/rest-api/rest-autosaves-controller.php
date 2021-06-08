@@ -320,7 +320,7 @@ class WP_Test_REST_Autosaves_Controller extends WP_Test_REST_Post_Type_Controlle
 	}
 
 	/**
-	 * @group 52925
+	 * @ticket 52925
 	 */
 	public function test_create_item_invalid_integration() {
 		$request = new WP_REST_Request( 'POST', '/wp/v2/posts/' . self::$post_id . '/autosaves' );
@@ -337,7 +337,7 @@ class WP_Test_REST_Autosaves_Controller extends WP_Test_REST_Post_Type_Controlle
 	}
 
 	/**
-	 * @group 52925
+	 * @ticket 52925
 	 */
 	public function test_create_item_invalid_unit() {
 		$autosaves_controller = new WP_REST_Autosaves_Controller('post');
@@ -350,7 +350,7 @@ class WP_Test_REST_Autosaves_Controller extends WP_Test_REST_Post_Type_Controlle
 	}
 
 	/**
-	 * @group 52925
+	 * @ticket 52925
 	 */
 	public function test_create_post_autosave_invalid() {
 		$autosaves_controller = new WP_REST_Autosaves_Controller('post');
